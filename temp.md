@@ -37,6 +37,42 @@ $$
 - **激活函数**：每个标签独立使用**Sigmoid**（输出0/1概率）。  
 - **损失函数**：使用**二元交叉熵损失（Binary Cross-Entropy Loss）**，每个标签单独计算损失后求和。
 
+```python
+import numpy as np
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+def compute_loss_v1(y_true, y_pred):
+    t_loss = y_true * np.log(sigmoid(y_pred)) + \
+             (1 - y_true) * np.log(1 - sigmoid(y_pred))  # [batch_size,num_class]
+    loss = t_loss.mean(axis=-1)  # 得到每个样本的损失值, 这里可以是
+    return -loss.mean()  # 返回整体样本的损失均值（或其他）
+
+if __name__ == '__main__':
+    y_true = np.array([[1, 1, 0, 0], [0, 1, 0, 1]])
+    y_pred = np.array([[0.2, 0.5, 0, 0], [0.1, 0.5, 0, 0.8]])
+    print(compute_loss_v1(y_true, y_pred)) # 0.5926
+```
+
+```python
+import torch
+import torch.nn.functional as F
+
+def sigmoid(z):
+    return 1 / (1 + torch.exp(-z))
+
+def compute_loss_v1(y_true, y_pred):
+    t_loss = y_true * torch.log(sigmoid(y_pred)) + \
+             (1 - y_true) * torch.log(1 - sigmoid(y_pred))
+    loss = t_loss.mean(dim=-1)
+    return -loss.mean()
+
+if __name__ == '__main__':
+    y_true = torch.tensor([[1, 1, 0, 0], [0, 1, 0, 1]], dtype=torch.float32)
+    y_pred = torch.tensor([[0.2, 0.5, 0, 0], [0.1, 0.5, 0, 0.8]], dtype=torch.float32)
+    print(compute_loss_v1(y_true, y_pred))
+```
+    
 
 ### **题型6：为什么回归问题不使用激活函数？**
 **准确回答**：  
